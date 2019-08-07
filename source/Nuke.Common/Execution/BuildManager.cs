@@ -107,13 +107,14 @@ namespace Nuke.Common.Execution
                     WriteWarningsAndErrors(outputSink);
                 }
 
-                if (build.ExecutionPlan != null)
+                if (build.ExecutionPlan != null) // TODO: can be removed?
                 {
                     Logger.Normal();
                     WriteSummary(build);
                 }
 
                 build.OnBuildFinished();
+                ExecuteExtension<IBuildFinishedExtension>(x => x.OnBuildFinished(build));
             }
         }
 
@@ -147,6 +148,7 @@ namespace Nuke.Common.Execution
 
             Logger.Normal(new string(c: '═', count: allColumns));
             Logger.Info(CreateLine("Target", "Status", "Duration"));
+            //Logger.Info($"{{0,-{firstColumn}}}{{1,-{secondColumn}}}{{2,{thirdColumn}}}{{3,1}}", "Target", "Status", "Duration", "Test");
             Logger.Normal(new string(c: '─', count: allColumns));
             foreach (var target in build.ExecutionPlan)
             {

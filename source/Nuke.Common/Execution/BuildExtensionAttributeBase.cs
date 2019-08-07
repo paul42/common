@@ -21,4 +21,9 @@ namespace Nuke.Common.Execution
     {
         void PostLogo(NukeBuild build, IReadOnlyCollection<ExecutableTarget> executableTargets, IReadOnlyCollection<ExecutableTarget> executionPlan);
     }
+
+    public interface IBuildFinishedExtension : IBuildExtension
+    {
+        void OnBuildFinished(NukeBuild build);
+    }
 }
