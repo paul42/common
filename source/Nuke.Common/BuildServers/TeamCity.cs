@@ -110,7 +110,11 @@ namespace Nuke.Common.BuildServers
         public string Version => Variable("TEAMCITY_VERSION");
         public string ProjectName => Variable("TEAMCITY_PROJECT_NAME");
         public string ServerUrl => ConfigurationProperties?["TEAMCITY_SERVERURL"];
-        [NoConvert] public string BranchName => ConfigurationProperties?["TEAMCITY_BUILD_BRANCH"];
+
+        [NoConvert] [CanBeNull] public string BranchName =>
+            ConfigurationProperties?.ContainsKey("TEAMCITY_BUILD_BRANCH") ?? false
+                ? ConfigurationProperties["TEAMCITY_BUILD_BRANCH"]
+                : null;
 
         public void DisableServiceMessages()
         {
@@ -179,9 +183,10 @@ namespace Nuke.Common.BuildServers
 
         public void AddStatisticValue(string key, string value)
         {
-            Write("buildStatisticValue", x => x
-                .AddKeyValue("key", key)
-                .AddKeyValue("value", value));
+            Write("buildStatisticValue",
+                x => x
+                    .AddKeyValue("key", key)
+                    .AddKeyValue("value", value));
         }
 
         public void SetProgress(string text)
@@ -206,9 +211,10 @@ namespace Nuke.Common.BuildServers
 
         public void OpenBlock(string name, string description = null)
         {
-            Write("blockOpened", x => x
-                .AddKeyValue("name", name)
-                .AddKeyValue("description", description));
+            Write("blockOpened",
+                x => x
+                    .AddKeyValue("name", name)
+                    .AddKeyValue("description", description));
         }
 
         public void CloseBlock(string name)
@@ -228,31 +234,35 @@ namespace Nuke.Common.BuildServers
 
         public void WriteMessage(string text)
         {
-            Write("message", x => x
-                .AddKeyValue("text", text)
-                .AddKeyValue("status", TeamCityStatus.NORMAL));
+            Write("message",
+                x => x
+                    .AddKeyValue("text", text)
+                    .AddKeyValue("status", TeamCityStatus.NORMAL));
         }
 
         public void WriteWarning(string text)
         {
-            Write("message", x => x
-                .AddKeyValue("text", text)
-                .AddKeyValue("status", TeamCityStatus.WARNING));
+            Write("message",
+                x => x
+                    .AddKeyValue("text", text)
+                    .AddKeyValue("status", TeamCityStatus.WARNING));
         }
 
         public void WriteFailure(string text)
         {
-            Write("message", x => x
-                .AddKeyValue("text", text)
-                .AddKeyValue("status", TeamCityStatus.FAILURE));
+            Write("message",
+                x => x
+                    .AddKeyValue("text", text)
+                    .AddKeyValue("status", TeamCityStatus.FAILURE));
         }
 
         public void WriteError(string text, string errorDetails = null)
         {
-            Write("message", x => x
-                .AddKeyValue("text", text)
-                .AddKeyValue("status", TeamCityStatus.ERROR)
-                .AddKeyValue("errorDetails", errorDetails));
+            Write("message",
+                x => x
+                    .AddKeyValue("text", text)
+                    .AddKeyValue("status", TeamCityStatus.ERROR)
+                    .AddKeyValue("errorDetails", errorDetails));
         }
 
         public void Write(string command, Func<IDictionary<string, object>, IDictionary<string, object>> dictionaryConfigurator)

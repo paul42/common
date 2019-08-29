@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Nuke.Common;
@@ -39,7 +40,7 @@ partial class Build : NukeBuild
     ///   - JetBrains Rider            https://nuke.build/rider
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
-    public static int Main() => Execute<Build>(x => x.Pack);
+    public static int Main() => Execute<Build>(x => x.A);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -61,6 +62,13 @@ partial class Build : NukeBuild
     readonly string DevelopBranch = "develop";
     readonly string ReleaseBranchPrefix = "release";
     readonly string HotfixBranchPrefix = "hotfix";
+
+    Target A => _ => _
+        .Executes(() =>
+        {
+            var process = Process.Start(DotNetPath, $"test {Solution.GetProject("Nuke.Common.Tests")}");
+            process.WaitForExit();
+        });
 
     Target Clean => _ => _
         .Before(Restore)
